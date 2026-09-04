@@ -6,12 +6,14 @@ public class Enemy {
     int maxHP;
 
     public Enemy(String name, int hp) {
+        this.name = name;
+        this.hp = hp;
+        this.maxHP = hp;
     }
 
     public void takeDamage(int damage) {
         // 1. Reduce hp by the damage value.
-        maxHP = hp;
-        hp =hp-damage;
+        hp = hp-damage;
         // 2. HP must not go below 0.
         if(hp<=0){
             hp = 0;

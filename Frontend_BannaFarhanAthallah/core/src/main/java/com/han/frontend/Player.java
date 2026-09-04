@@ -6,7 +6,11 @@ public class Player {
     int power;
     int spellCards;
 
-    public Player(String name, int hp, int power, int spellCards){
+    public Player(String name, int hp, int power, int spellCards) {
+        this.name = name;
+        this.hp = hp;
+        this.power = power;
+        this.spellCards = spellCards;
     }
 
     public void takeDamage(int damage) {
@@ -31,7 +35,7 @@ public class Player {
         // 1. Create an int named damage, calculated by adding 10 to power.
         int damage = power+10;
         // 2. Display information that the Player is shooting the Enemy, in the format: [name] shoots [TargetName] dealing [damage] DMG!
-        System.out.print(name + " shoots " + target + " dealing " + damage + " DMG!");
+        System.out.print(name + " shoots " + target.name + " dealing " + damage + " DMG!");
         // 3. Call the Enemy object's takeDamage() method.
         target.takeDamage(damage);
     }
