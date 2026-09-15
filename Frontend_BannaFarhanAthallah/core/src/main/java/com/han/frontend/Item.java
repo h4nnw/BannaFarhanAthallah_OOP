@@ -6,11 +6,16 @@ public class Item extends GameObject {
     private String itemType;
     private long scoreValue;
 
+    public long getScoreValue(){return this.scoreValue;}
+
+    public String getItemType() {return this.itemType;}
+
     public Item(float x, float y, String itemType){
         super(x,y,16,16,100f, Color.WHITE);
         this.scoreValue = 1000L;
         this.itemType = itemType;
     }
+
     public Item(float x, float y, float width, float height, float speed, String itemType){
         super(x,y,width,height,speed,Color.WHITE);
         this.scoreValue = 1000L;
@@ -23,7 +28,7 @@ public class Item extends GameObject {
     }
 
     @Override
-    public void update(float delta){
-        y = y-speed*delta;
+    public void update(float delta) {
+        this.y -= speed * delta;
     }
 }

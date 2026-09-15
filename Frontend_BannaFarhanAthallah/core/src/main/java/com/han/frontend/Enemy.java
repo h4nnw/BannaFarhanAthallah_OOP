@@ -21,37 +21,49 @@ public class Enemy extends GameObject {
         this.hp = hp;
         this.scoreValue = scoreValue;
     }
+    public void setHp(int hp) {
+        this.hp = Math.max(0, hp);
+    }
+    public int getHp(){ return this.hp;}
+    public void setName(String name){
+        this.name = name;
+    }
+
+    public String getName(){
+        return this.name;
+    }
+
+    public int getMaxHP() { return this.maxHP; }
+
+    public void setScoreValue(long scoreValue){ this.scoreValue = scoreValue;}
+
+    public long getScoreValue(){ return this.scoreValue;}
 
 
     public boolean takeDamage(int damage) {
         // 1. Reduce hp by the damage value.
-        maxHP = hp;
-        // 2. HP must not go below 0.
-        if(hp==0){
+        setHp(getHp()-damage);
+
+        if(getHp()==0) {
+            System.out.print(getName() + " was defeated!");
             return true;
         }
-        hp =hp-damage;
-        // 3. Display the current HP in the format: [EnemyName] took [damage] damage! HP: [currentHP]/[maxHP]
-        if(hp==0) {
-            System.out.print(name + " was defeated!");
-            return true;
-        }
-        // 4. If HP reaches 0, display that the Enemy has been defeated, in the format: [EnemyName] was defeated!
+
         else {
-            System.out.println(name + " took " + damage + " damage! HP: " + hp + "/" + maxHP);
+            System.out.print(getName() + " took " + damage + " damage! HP: " + getName() + "/" + getMaxHP());
             return false;
         }
 
     }
     public void attack(Player player, int damage) {
         // 1. Display information that the Enemy is attacking the Player, in the format: [EnemyName] unleashes bullet barrage on [PlayerName]!
-        System.out.print( name + " unleashes bullet barrage on " + player.name);
+        System.out.print( name + " unleashes bullet barrage on " + player.getName());
         // 2. Call the Player's takeDamage() method using the given damage.
         player.takeDamage(damage);
     }
 
     public boolean isAlive() {
-        // 1. Return true if hp > 0, and false otherwise
+
         if(hp>0) {return true;}
         else {return false;}
     }
