@@ -1,6 +1,8 @@
-package com.han.frontend;
+package com.han.frontend.objects.enemies;
 
 import com.badlogic.gdx.graphics.Color;
+import com.han.frontend.objects.GameObject;
+import com.han.frontend.objects.Player;
 
 public class Enemy extends GameObject {
     String name;

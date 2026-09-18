@@ -1,5 +1,11 @@
 package com.han.frontend;
 
+import com.han.frontend.objects.Player;
+import com.han.frontend.objects.enemies.Boss;
+import com.han.frontend.objects.enemies.Enemy;
+import com.han.frontend.objects.enemies.Fairy;
+import com.han.frontend.objects.items.Item;
+
 public class Test {
     public static void main(String[] args) {
         System.out.println("=== TOUHOU OOP PRACTICUM - MODULE 1: BASIC CLASSES & OBJECT INTERACTION ===");

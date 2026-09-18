@@ -1,9 +1,10 @@
-package com.han.frontend;
+package com.han.frontend.objects;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Rectangle;
 
-class GameObject {
+public abstract class GameObject implements Collidable {
     protected float x;
     protected float y;
     protected float width;
@@ -67,6 +68,16 @@ class GameObject {
         if (speed >= 0) this.speed = speed;
     }
 
+    @Override
+    public Rectangle getCoreHitbox(){ return new Rectangle(this.x, this.y, this.width, this.height);}
+
+    @Override
+    public Rectangle getGrazeHitbox(){return new Rectangle(this.x-10, this.y-10, this.width+20, this.height+20);}
+
+    @Override
+    public void onCollision(Collidable other) {
+        // Base collision handler (can be overridden by subclasses that need to react)
+    }
 
     public void update(float delta){
 
