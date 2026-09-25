@@ -3,7 +3,9 @@ package com.han.frontend.objects;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.han.frontend.objects.bullets.Bullet;
 import com.han.frontend.objects.enemies.Enemy;
+import com.han.frontend.objects.items.BulletType;
 import com.han.frontend.objects.items.Item;
 import com.han.frontend.objects.items.ItemType;
 
@@ -83,10 +85,20 @@ public class Player extends GameObject {
         target.takeDamage(damage);
     }
 
+    public Bullet shootBullet() {
+        int damage = 10 + power;
+        System.out.println(name + " shoots bullet dealing " + damage + " DMG!");
+        // TODO: return a new Bullet positioned at the top-center of the Player
+        // (x + width/2 - 4, y + height), with BulletType.AMULET as its type,
+        // and the damage calculated above
+        return new Bullet(x+width/2-4, y+height, BulletType.AMULET, damage);
+    }
+
+
 
     public boolean isAlive() {
         // 1. Return true if hp > 0, and false otherwise
-        if (hp > 0) {
+        if (getHp() > 0) {
             return true;
         }
         else {return false;}
@@ -94,12 +106,13 @@ public class Player extends GameObject {
     public void addScore(long points) {
         if (points > 0) {
             this.score += points;
-            System.out.println(getName() + " gained " + points + " pts! Total Score: " + this.score);
+            System.out.println(getName() + " gained " + points + " pts! Total Score: " + getScore());
         }
     }
 
     public void collectItem(Item item) {
         ItemType type = item.getItemTypeEnum();
+        if (item.isDestroyed()) return;
         if (type != null) {
             switch (type) {
                 case POWER -> {
@@ -133,6 +146,9 @@ public class Player extends GameObject {
                     System.out.print(getName() + " collected LIFE item! HP: " + getHp());
                 }
             }
+            // TODO: Mark this item as destroyed so it can later be removed by the Iterator
+            // Call the item's destroy() method here
+            item.destroy();
         } else {
             addScore(item.getScoreValue());
             System.out.println(name + " collected " + item.getItemType() + "!");

@@ -11,6 +11,7 @@ public abstract class GameObject implements Collidable {
     protected float height;
     protected float speed;
     protected Color color;
+    protected boolean active = true;
 
     public GameObject(float x, float y, float width, float height, float speed, Color color){
         this.x = x;
@@ -68,6 +69,17 @@ public abstract class GameObject implements Collidable {
         if (speed >= 0) this.speed = speed;
     }
 
+    public boolean isDestroyed() {
+        // TODO: return true if the object is NOT active (active == false)
+        return !active;
+    }
+
+    public void destroy() {
+        // TODO: mark this object as inactive
+        active = false;
+    }
+
+
     @Override
     public Rectangle getCoreHitbox(){ return new Rectangle(this.x, this.y, this.width, this.height);}
 
@@ -82,8 +94,18 @@ public abstract class GameObject implements Collidable {
     public void update(float delta){
 
     }
-    public void render(ShapeRenderer shapeRenderer){
-        shapeRenderer.setColor(this.color);
-        shapeRenderer.rect(this.x, this.y, this.width, this.height);
+    public void render(ShapeRenderer shapeRenderer) {
+        if (shapeRenderer != null && color != null && active) {
+            shapeRenderer.setColor(color);
+            shapeRenderer.rect(x, y, width, height);
+        }
     }
+    public boolean isOffScreen(float screenWidth, float screenHeight) {
+        // TODO: return true if the x or y position is outside the screen boundaries
+        // Use a 50px tolerance margin on each side, so objects that have only
+        // slightly passed the edge of the screen are not immediately considered gone.
+        final float offlimit = 50f;
+        return x < -offlimit || x > screenHeight*screenWidth || y < -offlimit || y > screenHeight*screenWidth;
+    }
+
 }
