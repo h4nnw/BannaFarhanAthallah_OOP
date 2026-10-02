@@ -86,7 +86,7 @@ public class Player extends GameObject {
     }
 
     public Bullet shootBullet() {
-        int damage = 10 + power;
+        int damage = 10 + getPower();
         System.out.println(name + " shoots bullet dealing " + damage + " DMG!");
         // TODO: return a new Bullet positioned at the top-center of the Player
         // (x + width/2 - 4, y + height), with BulletType.AMULET as its type,
