@@ -1,6 +1,9 @@
 package com.han.frontend.objects;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 
@@ -12,6 +15,10 @@ public abstract class GameObject implements Collidable {
     protected float speed;
     protected Color color;
     protected boolean active = true;
+    protected TextureRegion sprite;
+    protected Animation<TextureRegion> animation;
+    protected float stateTime = 0f;
+
 
     public GameObject(float x, float y, float width, float height, float speed, Color color){
         this.x = x;
@@ -65,9 +72,18 @@ public abstract class GameObject implements Collidable {
     public float getSpeed(){
         return this.speed;
     }
+
     public void setSpeed(float speed) {
         if (speed >= 0) this.speed = speed;
     }
+
+    public TextureRegion setSprite(TextureRegion sprite){ return this.sprite = sprite;}
+
+    public TextureRegion getSprite(){return this.sprite;}
+
+    public Animation setAnimation(Animation animation){return this.animation = animation;}
+
+    public Animation getAnimation(){return this.animation;}
 
     public boolean isDestroyed() {
         // TODO: return true if the object is NOT active (active == false)
@@ -92,7 +108,11 @@ public abstract class GameObject implements Collidable {
     }
 
     public void update(float delta){
+        stateTime += delta;
 
+        if (animation != null){
+            sprite = animation.getKeyFrame(stateTime);
+        }
     }
     public void render(ShapeRenderer shapeRenderer) {
         if (shapeRenderer != null && color != null && active) {
@@ -106,6 +126,17 @@ public abstract class GameObject implements Collidable {
         // slightly passed the edge of the screen are not immediately considered gone.
         final float offlimit = 50f;
         return x < -offlimit || x > screenHeight*screenWidth || y < -offlimit || y > screenHeight*screenWidth;
+    }
+
+    public void render(SpriteBatch batch) {
+        if (batch != null && active) {
+            if (animation != null) {
+                TextureRegion currentFrame = animation.getKeyFrame(stateTime, true);
+                batch.draw(currentFrame, x, y, width, height);
+            } else if (sprite != null) {
+                batch.draw(sprite, x, y, width, height);
+            }
+        }
     }
 
 }

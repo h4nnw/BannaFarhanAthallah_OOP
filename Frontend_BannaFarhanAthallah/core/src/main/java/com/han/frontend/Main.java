@@ -3,16 +3,17 @@ package com.han.frontend;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.han.frontend.objects.GameObject;
 import com.han.frontend.objects.Player;
-import com.han.frontend.objects.bullets.Bullet;
 import com.han.frontend.objects.enemies.Boss;
 import com.han.frontend.objects.enemies.Fairy;
-import com.han.frontend.objects.items.BulletType;
 import com.han.frontend.objects.items.Item;
 import com.han.frontend.objects.items.ItemType;
+import com.han.frontend.systems.AssetManager;
+import com.han.frontend.systems.EntityFactory;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -29,6 +30,8 @@ public class Main extends ApplicationAdapter {
     private Item powerItem;
     private Item pointItem;
     private List<GameObject> entities;
+    private SpriteBatch batch;
+    private List<Fairy> fairyList;
 
     public <T extends GameObject> void updateAndClean(List<T> list, float delta, float screenWidth, float screenHeight) {
         // 1. Get an Iterator<T> from the given list.
@@ -53,26 +56,41 @@ public class Main extends ApplicationAdapter {
 
     @Override
     public void create() {
-        shapeRenderer = new ShapeRenderer();
+        // TODO 1:
+        // When initializing the renderer, create a SpriteBatch and store it in batch.
+        // LibGDX hint: new SpriteBatch()
+        ShapeRenderer shapeRenderer = new ShapeRenderer();
+        SpriteBatch batch = new SpriteBatch();
+
+        // TODO 2:
+        // Initialize the fairy and entities lists as empty ArrayLists.
+        fairyList = new ArrayList<>();
         entities = new ArrayList<>();
 
-        player = new Player(280,40,"Reimu Hakurei",100,15,3);
+        // TODO 3:
+        // Before creating entities, get the AssetManager instance and call init().
+        AssetManager.getInstance().init();
 
-        fairy = new Fairy(150,380, "Stage 1 Fairy",20);
+        // TODO 4:
+        // Update how all entities are created! Follow the table and create Player, Fairy, Boss, and Item
+        // using the appropriate EntityFactory methods.
+        // Add both Fairies to the fairy list using add(...).
+        player = EntityFactory.createPlayer(280, 40,"Reimu Hakurei",100,15,3);
+        boss = EntityFactory.createBoss(300,400,"Rumia",150);
+        powerItem = EntityFactory.createItem(200,450, ItemType.POWER);
+        pointItem = EntityFactory.createItem(320,480, ItemType.POINT);
+        fairyList.add(EntityFactory.createFairy(150,380,"Red Fairy",20));
+        fairyList.add(EntityFactory.createFairy(250,380,"Blue Fairy",20, "fairy_idle_blue"));
 
-        boss = new Boss(380,400,"Cirno (Stage 2 Boss)",150);
-
-        powerItem = new Item(200, 450, 16, 16, 80f, ItemType.POWER, 500L);
-
-        pointItem = new Item(320, 480, 12, 12, 120f, ItemType.POINT, 1000L);
-
+        // TODO 5:
+        // Add all the objects you have just created to entities.
         entities.add(player);
-        entities.add(fairy);
         entities.add(boss);
+        entities.addAll(fairyList);
         entities.add(powerItem);
         entities.add(pointItem);
-
     }
+
 
     @Override
     public void render() {
@@ -115,13 +133,28 @@ public class Main extends ApplicationAdapter {
             }
         }
         shapeRenderer.end();
-    }
 
+        // ... Keep the code above unchanged
+        ScreenUtils.clear(0.1f, 0.1f, 0.15f, 1f);
+
+        batch.begin();
+        for (GameObject entity : entities) {
+            if (!entity.isDestroyed()) {
+                // TODO: Call each entity's .render() method with the SpriteBatch as its argument.
+                entity.render(batch);
+            }
+        }
+        batch.end();
+    }
 
     @Override
     public void dispose() {
-        if (shapeRenderer != null) {
-            shapeRenderer.dispose();
+        if (batch != null) {
+            batch.dispose();
         }
+
+        // TODO: Call dispose on AssetManager to release the loaded Textures as well.
+        AssetManager.getInstance().dispose();
     }
 }
+

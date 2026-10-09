@@ -3,11 +3,14 @@ package com.han.frontend.objects;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.han.frontend.objects.bullets.Bullet;
 import com.han.frontend.objects.enemies.Enemy;
-import com.han.frontend.objects.items.BulletType;
+import com.han.frontend.objects.bullets.BulletType;
 import com.han.frontend.objects.items.Item;
 import com.han.frontend.objects.items.ItemType;
+import com.han.frontend.systems.AssetManager;
 
 public class Player extends GameObject {
     private String name;
@@ -15,16 +18,17 @@ public class Player extends GameObject {
     private int power;
     private int spellCards;
     private long score;
+    private int currentDir;
 
     public Player(String name, int hp, int power, int spellCards) {
-        super(280, 40, 32, 32, 200f, Color.RED);
+        super(280, 40, 32, 48, 200f, Color.RED);
         this.name = name;
         this.hp = hp;
         this.power = power;
         this.spellCards = spellCards;
     }
     public Player(float x, float y, String name, int hp, int power, int spellCards){
-        super(x,y,32,32,200f,Color.RED);
+        super(x,y,32,48,200f,Color.RED);
         this.name = name;
         this.hp = hp;
         this.power = power;
@@ -64,6 +68,9 @@ public class Player extends GameObject {
     public long getScore(){
         return this.score;
     }
+
+    public void setCurrentDir(int currentDir){this.currentDir = currentDir ;}
+    public int getCurrentDir(){return this.currentDir;}
 
     public void takeDamage(int damage) {
         // 1. Reduce hp by the damage value.
@@ -158,25 +165,78 @@ public class Player extends GameObject {
 
     @Override
     public void update(float delta) {
+        // TODO 1: Call GameObject's update(delta) through super.
+        super.update(delta);
+
+        // TODO 2: Declare a local float variable dx with an initial value of 0
+        float dx = 0f;
+        // (dx = delta x, tracks the change in horizontal direction for animation)
         if (Gdx.input != null) {
-            // TODO: Check W / UP input   → y += speed * delta
-            if (Gdx.input.isKeyPressed(Input.Keys.W)){
-                this.y += speed*delta;
+            if (Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.UP)) {
+                y += speed * delta;
             }
-            // TODO: Check S / DOWN input → y -= speed * delta
-            if (Gdx.input.isKeyPressed(Input.Keys.S)){
-                this.y -= speed*delta;
+            if (Gdx.input.isKeyPressed(Input.Keys.S) || Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+                y -= speed * delta;
             }
-            // TODO: Check A / LEFT input → x -= speed * delta
-            if (Gdx.input.isKeyPressed(Input.Keys.A)){
-                this.x -= speed*delta;
+            if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+                x -= speed * delta;
+                // TODO 3: Adjust dx to match the direction.
+                // (If you move left, what should happen to dx?)
+                dx = x;
             }
-            // TODO: Check D / RIGHT input → x += speed * delta
-            if (Gdx.input.isKeyPressed(Input.Keys.D)){
-                this.x += speed*delta;
+            if (Gdx.input.isKeyPressed(Input.Keys.D) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+                x += speed * delta;
+                // TODO 4: Adjust dx to match the direction.
+                // (If you move right, what should happen to dx?)
+                dx = x;
+            }
+        }
+
+        // TODO 5: Call updateAnimationState(dx)
+    updateAnimationState(dx);
+    }
+
+    public void updateAnimationState(float dx) {
+        AssetManager assets = AssetManager.getInstance();
+        if (dx < 0) {
+            // TODO:
+            // 1. Only make the following changes if currentDir is not -1.
+            // 2. Set currentDir to -1.
+            // 3. Retrieve the "player_left" animation using assets.getAnimation(...).
+            //    Store it in a local variable of type Animation<TextureRegion> named anim.
+            // 4. If anim is not null, assign it using setAnimation(...).
+            setCurrentDir(-1);
+            Animation<TextureRegion> anim = assets.getAnimation("player_left");
+            if (anim != null){
+                setAnimation(anim);
+            }
+        } else if (dx > 0) {
+            // TODO:
+            // 1. Only make the following changes if currentDir is not 1.
+            // 2. Set currentDir to 1.
+            // 3. Retrieve the "player_right" animation using assets.getAnimation(...).
+            //    Store it in a local variable of type Animation<TextureRegion> named anim.
+            // 4. If anim is not null, assign it using setAnimation(...).
+            setCurrentDir(1);
+            Animation<TextureRegion> anim = assets.getAnimation("player_right");
+            if (anim != null){
+                setAnimation(anim);
+            }
+        } else {
+            // TODO:
+            // 1. Only make the following changes if currentDir is not 0.
+            // 2. Set currentDir to 0.
+            // 3. Retrieve the "player_idle" animation using assets.getAnimation(...).
+            //    Store it in a local variable of type Animation<TextureRegion> named anim.
+            // 4. If anim is not null, assign it using setAnimation(...).
+            setCurrentDir(0);
+            Animation<TextureRegion> anim = assets.getAnimation("player_idle");
+            if (anim != null){
+                setAnimation(anim);
             }
         }
     }
+
 
     @Override
     public void onCollision(Collidable other) {
