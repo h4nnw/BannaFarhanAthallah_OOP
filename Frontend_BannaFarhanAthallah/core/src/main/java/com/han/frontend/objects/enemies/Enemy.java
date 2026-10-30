@@ -3,6 +3,7 @@ package com.han.frontend.objects.enemies;
 import com.badlogic.gdx.graphics.Color;
 import com.han.frontend.objects.GameObject;
 import com.han.frontend.objects.Player;
+import com.han.frontend.systems.AssetManager;
 
 public class Enemy extends GameObject {
     String name;
@@ -45,13 +46,16 @@ public class Enemy extends GameObject {
     public boolean takeDamage(int damage) {
         boolean wasAlive = isAlive();
         setHp(getHp()-damage);
+        AssetManager assets = AssetManager.getInstance();
         if (getHp() < 0) {
             setHp(0);
         }
         System.out.println(getName() + " took " + damage + " damage! HP: " + getHp() + "/" + getMaxHP());
+        assets.playSfx("player_bullet_collision");
         if (wasAlive && getHp() == 0) {
             System.out.println(name + " was defeated!");
             // TODO: mark this enemy as destroyed
+            assets.playSfx("enemy_dies");
             destroy();
             return true;
         }

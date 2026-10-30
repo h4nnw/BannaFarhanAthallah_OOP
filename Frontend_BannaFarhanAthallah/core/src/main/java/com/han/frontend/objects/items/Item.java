@@ -36,6 +36,7 @@ public class Item extends GameObject {
     public Item(float x, float y, ItemType itemTypeEnum){
         super(x,y,16,16,100f,Color.WHITE);
         this.scoreValue = itemTypeEnum.getScoreValue();
+        this.itemTypeEnum = itemTypeEnum;
     }
 
     public Item(float x, float y, float width, float height, float speed, ItemType itemTypeEnum, long scoreValue){

@@ -40,7 +40,8 @@ public class EntityFactory {
     public static Bullet createPlayerBullet(float x, float y, int damage, String spriteKey) {
         // TODO 1: Retrieve the TextureRegion for spriteKey using getTextureRegion from
         // AssetManager.getInstance(), then store it in a local variable named `sprite`.
-        TextureRegion sprite = AssetManager.getInstance();
+        AssetManager assets = AssetManager.getInstance();
+        TextureRegion sprite = assets.getTextureRegion(spriteKey);
         // TODO 2:
         // Create a new Bullet using x, y, BulletType.AMULET, and damage;
         // store it in a local variable named `bullet`.
@@ -48,6 +49,7 @@ public class EntityFactory {
         // TODO 3:
         // Assign sprite to bullet using bullet.setSprite(...).
         bullet.setSprite(sprite);
+        assets.playSfx("shoot");
         // TODO 4:
         // Return bullet.
         return bullet;
@@ -56,7 +58,7 @@ public class EntityFactory {
     public static Bullet createPlayerBullet(float x, float y, int damage) {
         // TODO 5:
         // Return the result of calling the previous createPlayerBullet overload with "bullet_amulet" as spriteKey.
-        return createPlayerBullet(x,y,damage,"bullet_amulet")
+        return createPlayerBullet(x,y,damage,"bullet_amulet");
     }
 
 

@@ -5,12 +5,16 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 import com.han.frontend.objects.bullets.Bullet;
 import com.han.frontend.objects.enemies.Enemy;
 import com.han.frontend.objects.bullets.BulletType;
 import com.han.frontend.objects.items.Item;
 import com.han.frontend.objects.items.ItemType;
+import com.han.frontend.objects.patterns.ShootingPattern;
 import com.han.frontend.systems.AssetManager;
+import com.han.frontend.systems.BulletManager;
+import com.han.frontend.systems.EntityFactory;
 
 public class Player extends GameObject {
     private String name;
@@ -19,6 +23,7 @@ public class Player extends GameObject {
     private int spellCards;
     private long score;
     private int currentDir;
+    private ShootingPattern shootingPattern;
 
     public Player(String name, int hp, int power, int spellCards) {
         super(280, 40, 32, 48, 200f, Color.RED);
@@ -72,6 +77,9 @@ public class Player extends GameObject {
     public void setCurrentDir(int currentDir){this.currentDir = currentDir ;}
     public int getCurrentDir(){return this.currentDir;}
 
+    public ShootingPattern getShootingPattern() {return this.shootingPattern;}
+    public void setShootingPattern(ShootingPattern shootingPattern) {this.shootingPattern = shootingPattern;}
+
     public void takeDamage(int damage) {
         // 1. Reduce hp by the damage value.
         setHp(getHp() - damage);
@@ -92,13 +100,16 @@ public class Player extends GameObject {
         target.takeDamage(damage);
     }
 
-    public Bullet shootBullet() {
-        int damage = 10 + getPower();
-        System.out.println(name + " shoots bullet dealing " + damage + " DMG!");
-        // TODO: return a new Bullet positioned at the top-center of the Player
-        // (x + width/2 - 4, y + height), with BulletType.AMULET as its type,
-        // and the damage calculated above
-        return new Bullet(x+width/2-4, y+height, BulletType.AMULET, damage);
+    public void shootBullet(BulletManager bulletManager){
+        if (bulletManager == null){
+            return;
+        }
+        if (shootingPattern != null){
+            shootingPattern.execute(x+width/2f - 8f, y + height, bulletManager, true);
+        }
+        else {
+            bulletManager.spawnPlayerBullet(x + width/2 - 8f, y + height, 0f, 400f, 25);
+        }
     }
 
 
@@ -119,6 +130,7 @@ public class Player extends GameObject {
 
     public void collectItem(Item item) {
         ItemType type = item.getItemTypeEnum();
+        AssetManager assets = AssetManager.getInstance();
         if (item.isDestroyed()) return;
         if (type != null) {
             switch (type) {
@@ -126,15 +138,17 @@ public class Player extends GameObject {
                     // 1. Increase power by type.getPowerBonus() via this.power
                     // 2. Add score by item.getScoreValue() via addScore() (addScore() already automatically prints "gained X pts!")
                     // 3. Print: [name] collected POWER item! Power increased to [power]
-                    this.power = type.getPowerBonus();
+                    this.power += type.getPowerBonus();
                     addScore(item.getScoreValue());
                     System.out.print(getName() + " collected POWER item! Power increased to " + getPower());
+                    assets.playSfx("powerup");
                 }
                 case POINT -> {
                     // 1. Add score by item.getScoreValue() via addScore()
                     // 2. Print: [name] collected POINT item!
                     addScore(item.getScoreValue());
                     System.out.print(getName() + " collected POINT item! ");
+                    assets.playSfx("item_pickup");
                 }
                 case BOMB -> {
                     // 1. Increase spellCards by 1
@@ -182,13 +196,13 @@ public class Player extends GameObject {
                 x -= speed * delta;
                 // TODO 3: Adjust dx to match the direction.
                 // (If you move left, what should happen to dx?)
-                dx = x;
+                dx = -1;
             }
             if (Gdx.input.isKeyPressed(Input.Keys.D) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
                 x += speed * delta;
                 // TODO 4: Adjust dx to match the direction.
                 // (If you move right, what should happen to dx?)
-                dx = x;
+                dx = 1;
             }
         }
 
@@ -246,6 +260,22 @@ public class Player extends GameObject {
             System.out.print("Player touches items");
             collectItem((Item) other);
         }
+    }
+
+    @Override
+    public Rectangle getCoreHitbox() {
+        // TODO: Return a new 8x8 Rectangle centered right in the middle of the sprite:
+        // - X coordinate: x + (width / 2f) - 4f
+        // - Y coordinate: y + (height / 2f) - 4f
+        // - width: 8f, height: 8f
+        return new Rectangle((width/2f)-4f, (height/2f)-2f, 8f, 8f );
+    }
+
+    @Override
+    public Rectangle getGrazeHitbox() {
+        // TODO: Return a new Rectangle at position coordinates (x, y)
+        //       covering the entire visual sprite dimensions (width, height)
+        return new Rectangle(x,y,width,height);
     }
 
 
