@@ -22,7 +22,7 @@ public class AssetManager {
     private Map<String, Sound> sfxMap;
     private Map<String, Music> bgmMap;
     private Music currentBgm;
-    private float bgmVolume = 0.35f;
+    private float bgmVolume = 0.4f;
     private float sfxVolume = 0.125f;
 
     // Find out: why is the AssetManager constructor *private*?

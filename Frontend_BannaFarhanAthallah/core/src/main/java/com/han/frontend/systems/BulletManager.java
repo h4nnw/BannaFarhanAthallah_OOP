@@ -3,6 +3,10 @@ package com.han.frontend.systems;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.han.frontend.objects.bullets.Bullet;
 import com.han.frontend.objects.bullets.BulletType;
+import com.han.frontend.objects.GameObject;
+import com.han.frontend.objects.items.Item;
+import com.han.frontend.objects.items.ItemType;
+
 
 import java.util.*;
 
@@ -50,6 +54,48 @@ public class BulletManager {
         activeEnemyBullets.add(bullet);
         return bullet;
     }
+
+    // Spell Card (Bomb) Execution: Clear all active enemy bullets and convert them into POINT item drops!
+    public void clearEnemyBullets(List<GameObject> entities) {
+        // TODO:
+        // 1. Create an Iterator<Bullet> to safely traverse activeEnemyBullets.
+        // 2. While the iterator has a next element:
+        //    - Retrieve the current Bullet object.
+        //    - If the entities parameter is not null:
+        //      * Create an Item object of type ItemType.POINT using EntityFactory.createItem(...)
+        //        at position (bullet.getX(), bullet.getY()), then add it to the entities list.
+        //    - Mark the bullet as destroyed (bullet.destroy()).
+        //    - Remove the bullet from activeEnemyBullets using remove() on the iterator from step 1.
+        //    - Return the bullet to the enemyBulletPool queue using offer().
+        // TIP: See the rough outline in `clearPlayerBullets()` below
+        Iterator<Bullet> bIter = activeEnemyBullets.iterator();
+        while (bIter.hasNext()){
+            Bullet bullet = bIter.next();
+            if (entities != null){
+                GameObject pointItem = EntityFactory.createItem(bullet.getX(), bullet.getY(), ItemType.POINT);
+                entities.add(pointItem);
+            }
+            bullet.destroy();
+            bIter.remove();
+            enemyBulletPool.offer(bullet);
+        }
+    }
+
+    public void clearEnemyBullets() {
+        clearEnemyBullets(null);
+    }
+
+    // Clear all player bullets when restarting the game (Copy-Paste):
+    public void clearPlayerBullets() {
+        Iterator<Bullet> pIter = activePlayerBullets.iterator();
+        while (pIter.hasNext()) {
+            Bullet bullet = pIter.next();
+            bullet.destroy();
+            pIter.remove();
+            playerBulletPool.offer(bullet);
+        }
+    }
+
 
     public void update(float delta, float screenWidth, float screenHeight) {
         // 1. Player bullet recycling & movement (5 Points)
