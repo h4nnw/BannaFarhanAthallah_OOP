@@ -128,8 +128,8 @@ public class CollisionReferee {
             }
 
 
-            entities.addAll(newDrops);
         }
+        entities.addAll(newDrops);
     }
-    }
+}
 
