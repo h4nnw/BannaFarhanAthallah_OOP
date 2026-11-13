@@ -10,7 +10,6 @@ public enum ItemType {
     private final int powerBonus;
 
     ItemType(long scoreValue, int powerBonus) {
-        // TODO: initialize scoreValue and powerBonus from the constructor parameters
         this.scoreValue = scoreValue;
         this.powerBonus = powerBonus;
     }

@@ -14,124 +14,30 @@ public abstract class GameObject implements Collidable {
     protected float height;
     protected float speed;
     protected Color color;
-    protected boolean active = true;
     protected TextureRegion sprite;
     protected Animation<TextureRegion> animation;
     protected float stateTime = 0f;
+    protected boolean active = true;
 
-
-    public GameObject(float x, float y, float width, float height, float speed, Color color){
+    public GameObject(float x, float y, float width, float height, float speed, Color color) {
         this.x = x;
         this.y = y;
-        this.width =width;
+        this.width = width;
         this.height = height;
         this.speed = speed;
         this.color = color;
     }
 
-    public float getX(){
-        return this.x;
-    }
-
-    public float setX(float x){
-        return this.x = x;
-    }
-
-    public float getY(){
-        return this.y;
-    }
-
-    public float setY(float y){
-        return this.y = y;
-    }
-
-    public Color getColor(){
-        return this.color;
-    }
-
-    public Color setColor(Color color){
-        return this.color = color;
-    }
-
-    public float getWidth(){
-        return this.width;
-    }
-
-    public void setWidth(float width) {
-        if (width > 0) this.width = width;
-    }
-
-    public float getHeight(){
-        return this.height;
-    }
-
-    public void setHeight(float height) {
-        if (height > 0) this.height = height;
-    }
-
-    public float getSpeed(){
-        return this.speed;
-    }
-
-    public void setSpeed(float speed) {
-        if (speed >= 0) this.speed = speed;
-    }
-
-    public TextureRegion setSprite(TextureRegion sprite){ return this.sprite = sprite;}
-
-    public TextureRegion getSprite(){return this.sprite;}
-
-    public Animation setAnimation(Animation animation){return this.animation = animation;}
-
-    public Animation getAnimation(){return this.animation;}
-
-    public boolean isDestroyed() {
-        // TODO: return true if the object is NOT active (active == false)
-        return !active;
-    }
-
-    public void destroy() {
-        // TODO: mark this object as inactive
-        active = false;
-    }
-
-
-    @Override
-    public Rectangle getCoreHitbox(){ return new Rectangle(this.x, this.y, this.width, this.height);}
-
-    @Override
-    public Rectangle getGrazeHitbox(){return new Rectangle(this.x-10, this.y-10, this.width+20, this.height+20);}
-
-    @Override
-    public void onCollision(Collidable other) {
-        // Base collision handler (can be overridden by subclasses that need to react)
-    }
-
-    public void update(float delta){
+    public void update(float delta) {
         stateTime += delta;
-
-        if (animation != null){
-            sprite = animation.getKeyFrame(stateTime);
-        }
-    }
-    public void render(ShapeRenderer shapeRenderer) {
-        if (shapeRenderer != null && color != null && active) {
-            shapeRenderer.setColor(color);
-            shapeRenderer.rect(x, y, width, height);
-        }
-    }
-    public boolean isOffScreen(float screenWidth, float screenHeight) {
-        // TODO: return true if the x or y position is outside the screen boundaries
-        // Use a 50px tolerance margin on each side, so objects that have only
-        // slightly passed the edge of the screen are not immediately considered gone.
-        final float offlimit = 50f;
-        return x < -offlimit || x > screenHeight*screenWidth || y < -offlimit || y > screenHeight*screenWidth;
     }
 
+    // Render with SpriteBatch (respects animation PlayMode - LOOP vs NORMAL)
     public void render(SpriteBatch batch) {
         if (batch != null && active) {
             if (animation != null) {
-                TextureRegion currentFrame = animation.getKeyFrame(stateTime, true);
+                boolean looping = (animation.getPlayMode() == Animation.PlayMode.LOOP);
+                TextureRegion currentFrame = animation.getKeyFrame(stateTime, looping);
                 batch.draw(currentFrame, x, y, width, height);
             } else if (sprite != null) {
                 batch.draw(sprite, x, y, width, height);
@@ -139,4 +45,85 @@ public abstract class GameObject implements Collidable {
         }
     }
 
+    // Render fallback with ShapeRenderer (for geometric hitboxes)
+    public void render(ShapeRenderer shapeRenderer) {
+        if (shapeRenderer != null && color != null && active) {
+            shapeRenderer.setColor(color);
+            shapeRenderer.rect(x, y, width, height);
+        }
+    }
+
+    // Core Hitbox: Centered smaller death hurtbox inside the object
+    @Override
+    public Rectangle getCoreHitbox() {
+        float cw = width * 0.5f;
+        float ch = height * 0.5f;
+        return new Rectangle(x + (width - cw) / 2f, y + (height - ch) / 2f, cw, ch);
+    }
+
+    // Graze Hitbox: Full sprite dimensions for close-call detection
+    @Override
+    public Rectangle getGrazeHitbox() {
+        return new Rectangle(x, y, width, height);
+    }
+
+    @Override
+    public void onCollision(Collidable other) {
+        // Base collision handler
+    }
+
+    public boolean isDestroyed() {
+        return !active;
+    }
+
+    public void destroy() {
+        this.active = false;
+    }
+
+    public boolean isOffScreen(float screenWidth, float screenHeight) {
+        return (x < -50 || x > screenWidth + 50 || y < -50 || y > screenHeight + 50);
+    }
+
+    // Encapsulation: Getters and Setters
+    public float getX() { return x; }
+    public void setX(float x) { this.x = x; }
+
+    public float getY() { return y; }
+    public void setY(float y) { this.y = y; }
+
+    public float getWidth() { return width; }
+    public void setWidth(float width) {
+        if (width > 0) this.width = width;
+    }
+
+    public float getHeight() { return height; }
+    public void setHeight(float height) {
+        if (height > 0) this.height = height;
+    }
+
+    public float getSpeed() { return speed; }
+    public void setSpeed(float speed) {
+        if (speed >= 0) this.speed = speed;
+    }
+
+    public Color getColor() { return color; }
+    public void setColor(Color color) { this.color = color; }
+
+    public TextureRegion getSprite() { return sprite; }
+    public void setSprite(TextureRegion sprite) { this.sprite = sprite; }
+
+    public Animation<TextureRegion> getAnimation() { return animation; }
+    public void setAnimation(Animation<TextureRegion> animation) {
+        if (this.animation != animation) {
+            this.animation = animation;
+            this.stateTime = 0f; // Reset frame timer when changing animation
+        }
+    }
+
+    public boolean isActive() { return active; }
+
+    public void setActive(boolean active) { this.active = active; }
+
+    public float getStateTime() { return stateTime; }
+    public void setStateTime(float stateTime) { this.stateTime = stateTime; }
 }

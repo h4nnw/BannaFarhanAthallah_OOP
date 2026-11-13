@@ -1,79 +1,77 @@
 package com.han.frontend.objects.enemies;
 
 import com.badlogic.gdx.graphics.Color;
-import com.han.frontend.objects.GameObject;
+import com.han.frontend.objects.EntityShooter;
 import com.han.frontend.objects.Player;
+import com.han.frontend.objects.patterns.ShootingPattern;
+import com.han.frontend.objects.patterns.entityStrategy.EntityMovementPattern;
 import com.han.frontend.systems.AssetManager;
 
-public class Enemy extends GameObject {
-    String name;
-    int hp;
-    int maxHP;
+public class Enemy extends EntityShooter {
+    protected String name;
+    protected int hp;
+    protected int maxHp;
     protected long scoreValue;
 
     public Enemy(String name, int hp) {
         super(200, 380, 24, 24, 0, Color.PINK);
         this.name = name;
         this.hp = hp;
-        this.maxHP = hp;
-        this.scoreValue = 100L;
+        this.maxHp = hp;
+        this.scoreValue = 100;
     }
-    public Enemy(float x, float y, float width, float height,float speed, Color color, String name, int hp, long scoreValue){
-        super(x,y,width,height,speed,color);
+
+    public Enemy(float x, float y, float width, float height, Color color, String name, int hp, long scoreValue) {
+        super(x, y, width, height, 0, color);
         this.name = name;
         this.hp = hp;
+        this.maxHp = hp;
         this.scoreValue = scoreValue;
     }
-    public void setHp(int hp) {
-        this.hp = Math.max(0, hp);
-    }
-    public int getHp(){ return this.hp;}
-    public void setName(String name){
+
+    public Enemy(float x, float y, float width, float height, Color color, String name, int hp, long scoreValue, ShootingPattern shootingPattern, EntityMovementPattern movementPattern) {
+        super(x, y, width, height, 0, color, shootingPattern, movementPattern);
         this.name = name;
+        this.hp = hp;
+        this.maxHp = hp;
+        this.scoreValue = scoreValue;
     }
-
-    public String getName(){
-        return this.name;
-    }
-
-    public int getMaxHP() { return this.maxHP; }
-
-    public void setScoreValue(long scoreValue){ this.scoreValue = scoreValue;}
-
-    public long getScoreValue(){ return this.scoreValue;}
-
 
     public boolean takeDamage(int damage) {
         boolean wasAlive = isAlive();
-        setHp(getHp()-damage);
-        AssetManager assets = AssetManager.getInstance();
-        if (getHp() < 0) {
-            setHp(0);
+        this.hp -= damage;
+        if (this.hp < 0) {
+            this.hp = 0;
         }
-        System.out.println(getName() + " took " + damage + " damage! HP: " + getHp() + "/" + getMaxHP());
-        assets.playSfx("player_bullet_collision");
-        if (wasAlive && getHp() == 0) {
+        System.out.println(name + " took " + damage + " damage! HP: " + this.hp + "/" + this.maxHp);
+        AssetManager.getInstance().playSfx("player_bullet_collision");
+        if (wasAlive && this.hp == 0) {
             System.out.println(name + " was defeated!");
-            // TODO: mark this enemy as destroyed
-            assets.playSfx("enemy_dies");
-            destroy();
+            AssetManager.getInstance().playSfx("enemy_dies");
+            this.destroy(); // Mark enemy as destroyed/inactive so Iterator removes it!
             return true;
         }
         return false;
     }
 
     public void attack(Player player, int damage) {
-        // 1. Display information that the Enemy is attacking the Player, in the format: [EnemyName] unleashes bullet barrage on [PlayerName]!
-        System.out.print( name + " unleashes bullet barrage on " + player.getName());
-        // 2. Call the Player's takeDamage() method using the given damage.
+        System.out.println(name + " unleashes bullet barrage on " + player.getName() + "!");
         player.takeDamage(damage);
     }
 
     public boolean isAlive() {
-
-        if(hp>0) {return true;}
-        else {return false;}
+        return this.hp > 0;
     }
 
+    // Encapsulation getters and setters
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
+    public int getHp() { return hp; }
+    public void setHp(int hp) { this.hp = Math.max(0, hp); }
+
+    public int getMaxHp() { return maxHp; }
+
+    public long getScoreValue() { return scoreValue; }
+    public void setScoreValue(long scoreValue) { this.scoreValue = scoreValue; }
 }

@@ -2,29 +2,45 @@ package com.han.frontend.systems;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.han.frontend.objects.bullets.BulletType;
 import com.han.frontend.objects.Player;
 import com.han.frontend.objects.bullets.Bullet;
-import com.han.frontend.objects.bullets.BulletType;
 import com.han.frontend.objects.enemies.Boss;
-import com.han.frontend.objects.enemies.Enemy;
 import com.han.frontend.objects.enemies.Fairy;
 import com.han.frontend.objects.items.Item;
 import com.han.frontend.objects.items.ItemType;
 
-
 public class EntityFactory {
 
-    // Create a Player and assign the 'player_idle' animation from AssetManager
     public static Player createPlayer(float x, float y, String name, int hp, int power, int spellCards) {
-        Player player = new Player(x, y, name, hp, power, spellCards);
         Animation<TextureRegion> idleAnim = AssetManager.getInstance().getAnimation("player_idle");
+        Player player = new Player(x, y, name, hp, power, spellCards);
         player.setAnimation(idleAnim);
         return player;
     }
 
-    // Create an Item and assign its sprite from AssetManager based on ItemType
+    public static Fairy createFairy(float x, float y, String name, int hp) {
+        Animation<TextureRegion> idleAnim = AssetManager.getInstance().getAnimation("fairy_idle_red");
+        Fairy fairy = new Fairy(x, y, name, hp);
+        fairy.setAnimation(idleAnim);
+        return fairy;
+    }
+
+    public static Fairy createFairy(float x, float y, String name, int hp, String keyString) {
+        Animation<TextureRegion> idleAnim = AssetManager.getInstance().getAnimation(keyString);
+        Fairy fairy = new Fairy(x, y, name, hp);
+        fairy.setAnimation(idleAnim);
+        return fairy;
+    }
+
+    public static Boss createBoss(float x, float y, String name, int hp) {
+        Animation<TextureRegion> idleAnim = AssetManager.getInstance().getAnimation("boss_idle");
+        Boss boss = new Boss(x, y, name, hp);
+        boss.setAnimation(idleAnim);
+        return boss;
+    }
+
     public static Item createItem(float x, float y, ItemType itemType) {
-        Item item = new Item(x, y, itemType);
         String key = switch (itemType) {
             case POWER -> "item_power";
             case POINT -> "item_point";
@@ -32,62 +48,33 @@ public class EntityFactory {
             case LIFE  -> "item_life";
         };
         TextureRegion sprite = AssetManager.getInstance().getTextureRegion(key);
+        Item item = new Item(x, y, itemType);
         item.setSprite(sprite);
         return item;
-
     }
 
     public static Bullet createPlayerBullet(float x, float y, int damage, String spriteKey) {
-        // TODO 1: Retrieve the TextureRegion for spriteKey using getTextureRegion from
-        // AssetManager.getInstance(), then store it in a local variable named `sprite`.
-        AssetManager assets = AssetManager.getInstance();
-        TextureRegion sprite = assets.getTextureRegion(spriteKey);
-        // TODO 2:
-        // Create a new Bullet using x, y, BulletType.AMULET, and damage;
-        // store it in a local variable named `bullet`.
-        Bullet bullet = new Bullet(x,y,BulletType.AMULET,damage);
-        // TODO 3:
-        // Assign sprite to bullet using bullet.setSprite(...).
+        String key = (spriteKey != null) ? spriteKey : "bullet_amulet";
+        TextureRegion sprite = AssetManager.getInstance().getTextureRegion(key);
+        Bullet bullet = new Bullet(x, y, BulletType.AMULET, damage);
         bullet.setSprite(sprite);
-        assets.playSfx("shoot");
-        // TODO 4:
-        // Return bullet.
+        AssetManager.getInstance().playSfx("shoot");
         return bullet;
     }
 
     public static Bullet createPlayerBullet(float x, float y, int damage) {
-        // TODO 5:
-        // Return the result of calling the previous createPlayerBullet overload with "bullet_amulet" as spriteKey.
-        return createPlayerBullet(x,y,damage,"bullet_amulet");
+        return createPlayerBullet(x, y, damage, "bullet_amulet");
     }
 
-
-    // Create an enemy bullet (type DANMAKU, speed 0f, sprite bullet_danmaku)
-    public static Bullet createEnemyBullet(float x, float y, int damage) {
+    public static Bullet createEnemyBullet(float x, float y, int damage, String spriteKey) { // Add String spriteKey as a parameter
+        String key = (spriteKey != null) ? spriteKey : "bullet_danmaku"; // Add local String variable key
+        TextureRegion sprite = AssetManager.getInstance().getTextureRegion(key); // Change "bullet_danmaku" to the key variable
         Bullet bullet = new Bullet(x, y, 0f, BulletType.DANMAKU, damage);
-        TextureRegion sprite = AssetManager.getInstance().getTextureRegion("bullet_danmaku");
         bullet.setSprite(sprite);
         return bullet;
     }
 
-    public static Fairy createFairy(float x, float y, String name, int hp){
-        Fairy fairy = new Fairy(x, y, name, hp);
-        Animation<TextureRegion> idleAnim = AssetManager.getInstance().getAnimation("fairy_idle");
-        fairy.setAnimation(idleAnim);
-        return fairy;
-    }
-
-    public static Boss createBoss(float x, float y, String name, int hp){
-        Boss boss = new Boss(x,y,name,hp);
-        Animation<TextureRegion> idleAnim = AssetManager.getInstance().getAnimation("boss_idle");
-        boss.setAnimation(idleAnim);
-        return boss;
-    }
-
-    public static Fairy createFairy(float x, float y, String name, int hp, String keyString) {
-        Fairy fairy = new Fairy(x,y,name,hp);
-        Animation<TextureRegion> idleAnim = AssetManager.getInstance().getAnimation(keyString);
-        fairy.setAnimation(idleAnim);
-        return fairy;
+    public static Bullet createEnemyBullet(float x, float y, int damage) {
+        return createEnemyBullet(x, y, damage, "bullet_danmaku");
     }
 }

@@ -1,10 +1,12 @@
 package com.han.frontend.ui;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.han.frontend.observers.GameObserver;
+
 public class GameHUD implements GameObserver {
     private long score;
     private int hp;
@@ -17,18 +19,10 @@ public class GameHUD implements GameObserver {
     private ShapeRenderer shapeRenderer;
 
     public GameHUD() {
-        // Lazily initialized during rendering so it can run safely in headless CLI tests
+        // Lazy initialized during rendering to safely support headless CLI tests
     }
 
-    // TODO: Implement the methods from the GameObserver interface:
-    // 1. onScoreChanged(long newScore) -> update this.score
-    // 2. onHpChanged(int currentHp) -> update this.hp
-    // 3. onSpellCardsChanged(int currentSpellCards) -> update this.spellCards
-    // 4. onPowerChanged(int currentPower) -> update this.power
-    // 5. onGrazeChanged(int currentGraze) -> update this.grazeCount
-    // 6. onLivesChanged(int currentLives) -> update this.lives (Touhou Life System)
-
-
+    // Observer Pattern Updates
     @Override
     public void onScoreChanged(long newScore) {
         this.score = newScore;
@@ -37,6 +31,11 @@ public class GameHUD implements GameObserver {
     @Override
     public void onHpChanged(int currentHp) {
         this.hp = currentHp;
+    }
+
+    @Override
+    public void onLivesChanged(int currentLives) {
+        this.lives = currentLives;
     }
 
     @Override
@@ -54,11 +53,6 @@ public class GameHUD implements GameObserver {
         this.grazeCount = currentGraze;
     }
 
-    @Override
-    public void onLivesChanged(int currentLives) {
-        this.lives = currentLives;
-    }
-
     public void renderBackground() {
         if (Gdx.graphics != null && Gdx.gl != null) {
             if (shapeRenderer == null) {
@@ -69,7 +63,7 @@ public class GameHUD implements GameObserver {
             // Playfield boundary box: X: 32..416, Y: 16..560 (Width 384, Height 544)
             shapeRenderer.rect(32, 16, 384, 544);
 
-            // Information panel (Sidebar) boundary box: X: 432..768, Y: 16..560 (Width 336, Height 544)
+            // Sidebar boundary box: X: 432..768, Y: 16..560 (Width 336, Height 544)
             shapeRenderer.setColor(Color.DARK_GRAY);
             shapeRenderer.rect(432, 16, 336, 544);
             shapeRenderer.end();
@@ -111,11 +105,11 @@ public class GameHUD implements GameObserver {
         return shapeRenderer;
     }
 
-    // TODO: Create getters for score, hp, lives, spellCards, power, and grazeCount
-    public long getScore(){return this.score;}
-    public int getHp(){return this.hp;}
-    public int getLives(){return this.lives;}
-    public int getSpellCards(){return this.spellCards;}
-    public int getPower(){return this.power;}
-    public int getGrazeCount(){return this.grazeCount;}
+    // Encapsulation getters for Testing
+    public long getScore() { return score; }
+    public int getHp() { return hp; }
+    public int getLives() { return lives; }
+    public int getSpellCards() { return spellCards; }
+    public int getPower() { return power; }
+    public int getGrazeCount() { return grazeCount; }
 }
