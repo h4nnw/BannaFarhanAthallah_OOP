@@ -4,6 +4,7 @@ package com.han.backend.service;
 import com.han.backend.model.Score;
 import com.han.backend.repository.ScoreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -50,7 +51,7 @@ public class ScoreService {
 
     public List<Score> getLeaderboard(Integer limit) {
         // TODO: Use scoreRepository to find the Top Scores and provide the appropriate parameter
-        return scoreRepository.findTopScores(limit);
+        return scoreRepository.findTopScores(PageRequest.of(0, limit));
     }
 
     public void deleteScore(UUID scoreId) {

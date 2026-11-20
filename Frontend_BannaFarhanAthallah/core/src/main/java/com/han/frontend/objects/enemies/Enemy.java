@@ -1,8 +1,10 @@
 package com.han.frontend.objects.enemies;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Rectangle;
 import com.han.frontend.objects.EntityShooter;
 import com.han.frontend.objects.Player;
+import com.han.frontend.objects.items.ItemType;
 import com.han.frontend.objects.patterns.ShootingPattern;
 import com.han.frontend.objects.patterns.entityStrategy.EntityMovementPattern;
 import com.han.frontend.systems.AssetManager;
@@ -12,6 +14,11 @@ public class Enemy extends EntityShooter {
     protected int hp;
     protected int maxHp;
     protected long scoreValue;
+    protected ItemType itemDrop = null;
+    protected boolean damageable = true;
+    protected boolean collidable = true;
+    protected float shotHitboxWidth = 0f;
+    protected float shotHitboxHeight = 0f;
 
     public Enemy(String name, int hp) {
         super(200, 380, 24, 24, 0, Color.PINK);
@@ -38,6 +45,10 @@ public class Enemy extends EntityShooter {
     }
 
     public boolean takeDamage(int damage) {
+        if (!damageable) {
+            return false;
+        }
+
         boolean wasAlive = isAlive();
         this.hp -= damage;
         if (this.hp < 0) {
@@ -74,4 +85,25 @@ public class Enemy extends EntityShooter {
 
     public long getScoreValue() { return scoreValue; }
     public void setScoreValue(long scoreValue) { this.scoreValue = scoreValue; }
+    public ItemType getItemDrop() { return itemDrop; }
+    public void setItemDrop(ItemType itemDrop) { this.itemDrop = itemDrop; }
+
+    public boolean isDamageable() { return damageable; }
+    public void setDamageable(boolean damageable) { this.damageable = damageable; }
+
+    public boolean isCollidable() { return collidable; }
+    public void setCollidable(boolean collidable) { this.collidable = collidable; }
+
+    public Rectangle getShotHitbox() {
+        if (shotHitboxWidth <= 0f || shotHitboxHeight <= 0f) {
+            return getCoreHitbox();
+        }
+        return new Rectangle(x + (width - shotHitboxWidth) / 2f, y + (height - shotHitboxHeight) / 2f,
+            shotHitboxWidth, shotHitboxHeight);
+    }
+
+    public void setShotHitboxSize(float width, float height) {
+        this.shotHitboxWidth = width;
+        this.shotHitboxHeight = height;
+    }
 }

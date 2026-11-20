@@ -2,6 +2,7 @@
 package com.han.backend.repository;
 
 import com.han.backend.model.Score;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -19,7 +20,7 @@ public interface ScoreRepository extends JpaRepository<Score, UUID> {
 
     @Query("SELECT s FROM Score s ORDER BY s.point DESC")
     // TODO: create a "findTopScores" method with Integer limit as the parameter, this method will return List<Score>
-    List<Score> findTopScores(Integer limit);
+    List<Score> findTopScores(Pageable pageable);
 
 }
 

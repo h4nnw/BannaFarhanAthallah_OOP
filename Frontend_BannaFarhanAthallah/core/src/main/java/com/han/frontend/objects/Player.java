@@ -193,8 +193,7 @@ public class Player extends EntityShooter {
         float minX = 32;
         float maxX = 416 - width;
         float minY = 16;
-        float maxY = 560 - height;
-
+        float maxY = 464 - height;
         if (x < minX) x = minX;
         if (x > maxX) x = maxX;
         if (y < minY) y = minY;
@@ -219,8 +218,10 @@ public class Player extends EntityShooter {
 
         // TODO (2 points): If sideShootingPattern is not null and homingShootTimer is greater than or equal to homingCooldown,
         // call sideShootingPattern.execute(x + width / 2f - 8f, y + height, bulletManager, true), then reset homingShootTimer to zero.
-        sideShootingPattern.execute(x+width/2f-8f, y+height, bulletManager, true);
-        this.homingShootTimer = 0f;
+        if (sideShootingPattern != null && homingShootTimer >= homingCooldown) {
+            sideShootingPattern.execute(x + width / 2f - 8f, y + height, bulletManager, true);
+            this.homingShootTimer = 0f;
+        }
     }
 
 
@@ -420,7 +421,7 @@ public class Player extends EntityShooter {
     public void resetGame() {
         this.lives = 3;
         this.hp = 100;
-        this.power = 15;
+        this.power = 0;
         updatePowerStrategy();
         this.spellCards = 3;
         this.score = 0;
